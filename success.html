@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+</head>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+    
+    .first {
+        width: 300px;
+        margin: 0 auto;
+    }
+    
+    .firsrt img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .four {
+        width: 220px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .six-left {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        position: fixed;
+        width: 165px;
+        height: 48px;
+        line-height: 48px;
+        bottom: 50px;
+        left: 10px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+    }
+    
+    .six-right {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        position: fixed;
+        width: 165px;
+        height: 48px;
+        line-height: 48px;
+        bottom: 50px;
+        right: 10px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+    }
+    
+    .four {
+        width: 300px;
+        margin: 0 auto;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+        <div style="text-align: center;margin-top:30px">
+            <img src="./images/successful.png" style="width:80px;height:80px" />
+        </div>
+        <div style="text-align: center;margin-top:30px">
+            <p style="margin-bottom:5px;font-family: Bio Sans;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 18px;
+            color: #000000;">{{curLangule['key5']}}</p>
+            <p style="word-wrap:break-word">{{curLangule['key4']}}</p>
+            <p style="word-wrap:break-word;margin-top:10px">{{curLangule['key7']}}<span style="pading-bottom:5px; border-bottom: 1px solid rgb(49, 174, 255);color: rgb(49, 174, 255);
+                cursor: pointer;" @click="openUrl()">https://t.me/elastoswalletelephant</span></p>
+        </div>
+
+        <div class="four">
+            <span class="six-left" @click="histroy">{{curLangule['key6']}}</span>
+            <span class="six-right" @click="back">{{curLangule['key1']}}</span>
+        </div>
+    </div>
+</body>
+<script src="./js/vue.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                key1: "返回主页",
+                key2: '成功',
+                key4: '如果30分钟没有到账，请联系客服人员。',
+                key5: '存款成功',
+                key6: '兑换记录',
+                key7: '电报：',
+            },
+            en: {
+                key1: "Back Page",
+                key2: 'Successful',
+                key4: 'Please contact support if you have not received the token 30 minutes later.',
+                key5: 'Deposit successful',
+                key6: 'Exchange records',
+                key7: 'Support Telegram：',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+        },
+        methods: {
+            openUrl() {
+                location.href = "https://t.me/elastoswalletelephant";
+            },
+            histroy() {
+                location.href = "./exchange_list.html";
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            back() {
+                let dataContent = localStorage.getItem('cross.chain.transfer') || "";
+                location.href = "./exchange_start.html?Data=" + this.dataContent;
+            }
+        },
+        destroyed() {
+            window.removeEventListener('popstate', this.goBack, false);
+        },
+        mounted: function() {
+            this.getLanugle();
+            document.title = this.curLangule["key2"];
+            // `this` 指向 vm 实例
+            if (window.history && window.history.pushState) {
+                // 向历史记录中插入了当前页
+                history.pushState(null, null, document.URL);
+                window.addEventListener('popstate', this.back, false);
+            }
+        }
+    });
+</script>
+
+</html>

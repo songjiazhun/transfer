@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/wallet-address-validator.min.js"></script>
+    <script src="./js/global_variable.js"></script>
+    <script>
+        Vue.prototype.$global = WAValidator;
+        Vue.prototype.$getBaseURL = getBaseURL;
+    </script>
+</head>
+<style type="text/css">
+    .bg {
+        position: fixed;
+        left: 0px;
+        right: 0px;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: url(./images/cbg.png) no-repeat;
+        background-size: 100% 100%;
+        text-align: center;
+    }
+    
+    .first {
+        position: relative;
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 5px;
+        background: #FFFFFF;
+        box-shadow: 0px 8px 12px rgba(0, 54, 96, 0.16);
+        border-radius: 5px;
+        height: 82px;
+    }
+    
+    .first .shuoming {
+        position: absolute;
+        left: 23px;
+        top: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        color: #3C96FF;
+    }
+    
+    .first .xiala {
+        display: inline-block;
+        width: 284px;
+        position: absolute;
+        top: 31px;
+        left: 15px;
+        vertical-align: middle;
+        padding: 0;
+        overflow: hidden;
+        background-color: #fff;
+        /* color: #555; */
+        /* border: 1px solid #aaa; */
+        text-shadow: none;
+        border-radius: 4px;
+        transition: box-shadow 0.25s ease;
+        border: 0;
+        z-index: 2;
+    }
+    
+    .first .xiala:hover {
+        border: 0;
+        /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); */
+    }
+    
+    .first .xiala:before {
+        border: 0;
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-top-color: #ccc;
+        top: 14px;
+        right: 10px;
+        cursor: pointer;
+        z-index: -2;
+    }
+    
+    .first .xiala select {
+        border: 0;
+        cursor: pointer;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        background-image: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        color: #333333;
+        font-size: 18px;
+    }
+    
+    .first .xiala select:focus {
+        border: 0;
+        outline: 0;
+    }
+    
+    .second {
+        position: relative;
+        z-index: 3;
+        margin-top: -16px;
+    }
+    
+    .second img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .three {
+        position: relative;
+        width: 300px;
+        margin: 0 auto;
+        background: #FFFFFF;
+        box-shadow: 0px 8px 12px rgba(0, 54, 96, 0.16);
+        border-radius: 5px;
+        height: 122px;
+        margin-top: -26px;
+    }
+    
+    .three .shuoming {
+        position: absolute;
+        left: 23px;
+        top: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        color: #3C96FF;
+    }
+    
+    .three .xiala {
+        display: inline-block;
+        width: 284px;
+        position: absolute;
+        top: 31px;
+        left: 15px;
+        vertical-align: middle;
+        padding: 0;
+        overflow: hidden;
+        background-color: #fff;
+        text-shadow: none;
+        border-radius: 4px;
+        transition: box-shadow 0.25s ease;
+        border: 0;
+        z-index: 2;
+    }
+    
+    .three .xiala:hover {
+        border: 0;
+    }
+    
+    .three .xiala:before {
+        border: 0;
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-top-color: #ccc;
+        top: 14px;
+        right: 10px;
+        cursor: pointer;
+        z-index: -2;
+    }
+    
+    .three .xiala select {
+        border: 0;
+        cursor: pointer;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        background-image: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        color: #333333;
+        font-size: 18px;
+    }
+    
+    .three .xiala select:focus {
+        border: 0;
+        outline: 0;
+    }
+    
+    .three .address {
+        position: absolute;
+        width: 270px;
+        top: 80px;
+        left: 23px;
+        border-top: 1px solid #999999;
+    }
+    
+    .three .address input {
+        position: absolute;
+        left: 0px;
+        top: 10px;
+        width: 240px;
+        vertical-align: middle;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        color: #333333;
+        outline-style: none;
+        border: 0px;
+    }
+    
+    .three .address img {
+        position: absolute;
+        right: 0px;
+        top: 10px;
+        vertical-align: middle;
+    }
+    
+    .four {
+        text-align: left;
+        margin: 0 auto;
+        margin-top: 22px;
+        vertical-align: middle;
+        padding: 10px;
+        width: 280px;
+        height: 36px;
+        background: #FFFFFF;
+        opacity: 0.6;
+        border-radius: 5px;
+        overflow: auto;
+    }
+    
+    .five {
+        width: 300px;
+        height: 36px;
+        margin: 0 auto;
+        margin-top: 22px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        text-align: left;
+    }
+    
+    .five input {
+        border: 0;
+        outline: 0;
+        border: 1px solid #999999;
+        padding-left: 10px;
+        border-radius: 5px;
+        width: 288px;
+        height: 31px;
+    }
+    
+    .six {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        width: 300px;
+        height: 48px;
+        line-height: 48px;
+        margin-top: 70px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+    }
+    
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        height: 45px;
+        line-height: 45px;
+        padding: 0 15px;
+        width: 100%;
+    }
+    
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .hui {
+        background: #dddddd;
+        color: #333333;
+    }
+    
+    .seven {
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 20px;
+        text-align: right;
+        color: rgb(49, 174, 255);
+    }
+    
+    .seven span {
+        text-align: center;
+        position: absolute;
+        right: 0px;
+        cursor: pointer;
+        display: inline-block;
+        width: 100px;
+        height: 36px;
+        line-height: 36px;
+        background: #31ACFC;
+        margin-bottom: 14px;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        color: #ffffff;
+        font-size: 14px;
+    }
+    
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+        <div class="bg">
+            <div class="first">
+                <div class="shuoming">
+                    {{curLangule["key2"]}}
+                </div>
+                <div class="xiala">
+                    <select v-model="src_chain_id" @change='getInfo'>
+                            <option :value ="item.chain_id" v-for="(item) in src_chain_list" v-if="item.chain_id!=dst_chain_id">
+                                {{item.chain_name}}
+                            </option>
+                  </select>
+                </div>
+            </div>
+            <div class="second" @click="exchange">
+                <img src="./images/duihuan.png" />
+            </div>
+            <div class="three">
+                <div class="shuoming">
+                    {{curLangule["key3"]}}
+                </div>
+                <div class="xiala">
+                    <select v-model="dst_chain_id" @change='getInfo'>
+                            <option :value ="item.chain_id" v-for="(item) in dst_chain_list" v-if="item.chain_id!=src_chain_id">
+                                {{item.chain_name}}
+                            </option>
+                  </select>
+                </div>
+                <div class="address">
+                    <input :placeholder="curLangule['key4']" v-model="dst_addr" />
+                </div>
+            </div>
+
+            <div class="five">
+                <input :placeholder="curLangule['key5']" v-model="back_addr" id="test" @focus="focus()" />
+            </div>
+
+            <div class="four" v-if="src_chain_id === 1&dst_chain_id===2">
+                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}}) >>>> 0.97 {{dstChainName}}
+            </div>
+
+            <div class="four" v-if="src_chain_id === 2&dst_chain_id===1">
+                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.97 {{dstChainName}}
+            </div>
+
+            <div class="four" v-if="src_chain_id === 1&dst_chain_id===3">
+                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.9997 {{dstChainName}}
+            </div>
+
+            <div class="four" v-if="src_chain_id === 3&dst_chain_id===1">
+                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.9699 {{srcChainName}}
+            </div>
+
+
+            <div class="seven" @click="histroy">
+                <span><img src="./images/history.png" style="vertical-align: middle;margin-right: 10px;"/>{{curLangule['key9']}}</span>
+            </div>
+
+            <div style="width: 300px;margin: 0 auto" @click="nextPage" :class="{hui:!isShow}">
+                <span class="six" :class="{hui:!isShow}">{{curLangule['key6']}}</span>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                key1: '转移',
+                key2: '从',
+                key3: '到',
+                key4: '地址',
+                key5: '退款地址',
+                key6: '提交',
+                key7: '暂不支持',
+                key8: '复制成功',
+                key9: '历史',
+                error1: '地址不合法',
+                error2: '退款地址不合法',
+            },
+            en: {
+                key1: 'Transfer',
+                key2: 'From',
+                key3: 'To',
+                key4: 'Address',
+                key5: 'Refund Address',
+                key6: 'Submit',
+                key7: 'Not support',
+                key8: 'Copy success',
+                key9: 'History',
+                error1: 'Illegal address',
+                error2: 'Illegal refund address',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            toastShow: false,
+            toastText: '',
+            src_chain_list: [],
+            dst_chain_list: [],
+            src_chain_id: "",
+            old_src_chain_id: "",
+            dst_chain_id: "",
+            old_dst_chain_id: "",
+            //back_addr: "ENx3GpTNqm6h1cQ4phZkXqeXmHs27PLeD8", //退款的地址
+            //dst_addr: "0x17a49F42D49B54142d9eC2b392E31356DD38108C", //收款的地址
+            back_addr: '',
+            dst_addr: '',
+            did: "",
+            elaAddress: "",
+            rate: "",
+            fee: "",
+            threshold_max: "",
+            threshold_min: "",
+            srcChainName: "",
+            dstChainName: "",
+            isShow: true,
+            isShowButton: true,
+
+        },
+        methods: {
+            isAddressValid(address) {
+                var r = false;
+                if (address.length != 34) {
+                    return r
+                }
+
+                r = (address[0] == 'E' || address[0] == 'i' ||
+                    address[0] == '8' || address[0] == 'X' || address[0] == 'D')
+
+                if (r == false && address === "1111111111111111111114oLvT2") {
+                    r = true;
+                }
+
+                return r;
+            },
+            histroy() {
+                location.href = "./exchange_list.html";
+            },
+            nextPage() {
+                if (this.checkParms() && this.isShow) {
+                    this.generator();
+                }
+            },
+            exchange() {
+                var temp = this.src_chain_id;
+                this.src_chain_id = this.dst_chain_id;
+                this.dst_chain_id = temp;
+                this.getInfo();
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            getInfo() {
+                let url = this.$getBaseURL() + '/rateinfo?src=' + this.src_chain_id + "&dst=" + this.dst_chain_id;
+                this.getAjax(url).then((res) => {
+                    if (res.state === 0) {
+                        var data = res["data"] || {};
+                        this.rate = data["rate"];
+                        this.fee = data["fee"];
+                        this.srcChainName = data["srcChainName"];
+                        this.dstChainName = data["dstChainName"];
+                        this.threshold_max = data["threshold_max"];
+                        this.threshold_min = data["threshold_min"];
+                        this.old_src_chain_id = this.src_chain_id;
+                        this.old_dst_chain_id = this.dst_chain_id;
+                        //this.back_addr = "";
+                        //this.dst_addr = "";
+                    } else {
+                        this.toast(this.curLangule['key7']);
+                        this.src_chain_id = this.old_src_chain_id;
+                        this.dst_chain_id = this.old_dst_chain_id;
+                    }
+                }).catch(() => {
+
+                })
+            },
+            generator() {
+                this.isShow = false;
+                let url = this.$getBaseURL() + '/generator';
+                let parms = {
+                    "src_chain_id": this.src_chain_id,
+                    "back_addr": this.back_addr,
+                    "dst_chain_id": this.dst_chain_id,
+                    "dst_addr": this.dst_addr,
+                    "user_did": this.did
+                }
+
+                this.postAjax(url, parms).then((res) => {
+
+                    if (res.state === 0) {
+                        this.isShow = true;
+                        var data = res.data;
+                        location.href = "./exchange_end.html?obj=" + encodeURIComponent(JSON.stringify(data));
+                    } else {
+                        this.toast(res.state + ":" + res.msg);
+                        this.isShow = true;
+                    }
+
+                }).catch(() => {
+                    this.isShow = true;
+                });
+            },
+            getChainList() {
+                let url = this.$getBaseURL() + '/chainlist';
+                this.getAjax(url).then((res) => {
+                    if (res.state === 0) {
+                        this.src_chain_list = _.cloneDeep(res["data"]) || [];
+                        this.dst_chain_list = _.cloneDeep(res["data"]).reverse();
+                        this.src_chain_id = this.src_chain_list[0]["chain_id"];
+                        this.old_src_chain_id = this.src_chain_list[0]["chain_id"];
+                        this.dst_chain_id = this.dst_chain_list[0]["chain_id"];
+                        this.old_dst_chain_id = this.dst_chain_list[0]["chain_id"];
+                        this.getInfo();
+                    }
+                }).catch(() => {
+                    //this.toast("错误码：" + res.state);
+                });
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            },
+            checkParms() {
+
+                if (this.dst_addr === "") {
+                    this.toast(this.curLangule['key4']);
+                    return false;
+                }
+
+                if ((this.dst_chain_id === 1 || this.dst_chain_id === 2) && !this.isAddressValid(this.dst_addr)) {
+                    this.toast(this.curLangule['error1']);
+                    return false;
+                }
+
+                if (this.dst_chain_id === 3 && !this.$wAValidator.validate(this.dst_addr, 'ETH')) {
+                    this.toast(this.curLangule['error1']);
+                    return false;
+                }
+
+
+
+                if (this.back_addr === "") {
+                    this.toast(this.curLangule["key5"]);
+                    return false;
+                }
+
+                if ((this.src_chain_id === 1 || this.src_chain_id === 2) && !this.isAddressValid(this.back_addr)) {
+                    this.toast(this.curLangule['error2']);
+                    return false;
+                }
+
+                if (this.src_chain_id === 3 && !this.$wAValidator.validate(this.back_addr, 'ETH')) {
+                    this.toast(this.curLangule['error2']);
+                    return false;
+                }
+                return true;
+            },
+            postAjax(url, parms) {
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        type: 'POST',
+                        data: JSON.stringify(parms),
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+                });
+            },
+            getAjax(url) {
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        type: 'GET',
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+
+
+                })
+            }
+        },
+        mounted() {
+            this.getLanugle();
+            document.title = this.curLangule["key1"];
+            let data = this.GetQueryString("Data") || "";
+            if (data != "") {
+                localStorage.setItem('cross.chain.transfer', data);
+                data = JSON.parse(decodeURIComponent(data));
+                this.did = data["DID"];
+                this.getChainList();
+            }
+        }
+    });
+</script>
+
+</html>

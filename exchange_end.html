@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/vue-clipboard.min.js"></script>
+    <script src="./js/vue-qrcode.min.js"></script>
+    <script src="./js/global_variable.js"></script>
+    <script>
+        Vue.prototype.$getBaseURL = getBaseURL;
+        Vue.component(VueQrcode.name, VueQrcode);
+    </script>
+</head>
+<style type="text/css">
+    body {
+        background: #ffffff;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    
+    .first {
+        width: 300px;
+        margin: 0 auto;
+    }
+    
+    .first img {
+        width: 100px;
+        height: 80px;
+    }
+    
+    .second {
+        width: 300px;
+        margin: 0 auto;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        color: #000000;
+    }
+    
+    .three {
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 5px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        text-align: center;
+        color: #000000;
+    }
+    
+    .four {
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 5px;
+    }
+    
+    .four img {
+        margin-top: -7px;
+        vertical-align: middle;
+    }
+    
+    .five {
+        width: 160px;
+        margin: 0 auto;
+    }
+    
+    .seven {
+        width: 300px;
+        margin: 0 auto;
+        border-radius: 5px;
+    }
+    
+    .seven input {
+        border: 0;
+        outline: 0;
+        padding-left: 10px;
+        border-radius: 5px;
+        width: 290px;
+        height: 31px;
+        border: 1px solid #999999;
+    }
+    
+    .six {
+        cursor: pointer;
+        margin: 0 auto;
+        position: fixed;
+        width: 300px;
+        height: 48px;
+        line-height: 48px;
+        bottom: 90px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+    }
+    
+    .six-left {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        position: fixed;
+        width: 165px;
+        height: 48px;
+        line-height: 48px;
+        bottom: 90px;
+        left: 10px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+    }
+    
+    .six-right {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        position: fixed;
+        width: 165px;
+        height: 48px;
+        line-height: 48px;
+        bottom: 90px;
+        right: 10px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+    }
+    
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        height: 45px;
+        line-height: 45px;
+        padding: 0 15px;
+        width: 100%;
+    }
+    
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+
+        <div class="text-center">
+            <div class="first">
+                <img src="./images/deposit.png" />
+            </div>
+
+            <div class="second">
+                {{curLangule['key2']}}
+            </div>
+
+            <div class="three">
+                {{curLangule['key3']}}{{curLangule['key4']}}（{{chargeName}}）
+            </div>
+
+            <div class="four" @click="doCopy(chargeAddress)" style="background: #E6F1FF;padding: 10px 0px;border-radius: 5px;">
+                <span style="display: inline-block;width:255px;font-size: 14px;
+                color: #31ACFC;overflow: auto;">{{chargeAddress}}</span>
+                <span style="display: inline-block;width:40px;"><img src="./images/ccopy.png" /> </span>
+            </div>
+
+            <div class="five">
+                <qrcode :value="chargeAddress" :options="{ width: 160 }" style="display:block"></qrcode>
+            </div>
+
+            <div class="seven" v-if="chargeName==='ela main chain' || chargeName==='eth side chain'">
+                <input :placeholder="curLangule['key7']" v-model="chargeAmount" />
+            </div>
+
+            <div v-if="src_chain_id===1 || src_chain_id===3">
+                <span class="six-left" @click="goCharge" v-if="isShow">{{curLangule['key5']}}</span> <span class="six-right" @click="back" v-if="isShow">{{curLangule['key6']}}</span>
+            </div>
+
+            <div v-if="src_chain_id===2">
+                <div style="width: 300px;margin: 0 auto;" @click="back">
+                    <p class="six">{{curLangule['key6']}}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                key1: '转移',
+                key2: "等待存款",
+                key3: '请存款',
+                key4: '到这个地址',
+                key5: '充值',
+                key6: '返回主页',
+                key7: '输入充值金额',
+                key8: '复制成功',
+                error8: '请输入ELA金额',
+                error9: '请输入正确的金额',
+            },
+            en: {
+                key1: 'Transfer',
+                key2: "Wait to deposit",
+                key3: 'Please deposit',
+                key4: ' to this address',
+                key5: 'Recharge',
+                key6: 'Back Page',
+                key7: 'Input recharge amount',
+                key8: 'Copy success',
+                error8: 'Please enter the amount of ELA',
+                error9: 'Wrong Amount',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            toastShow: false,
+            toastText: '',
+            chargeAddress: "xxxxxxxxxxxx",
+            chargeName: "",
+            did: "",
+            timer: "",
+            state: "renewal_waiting",
+            exchangeId: "",
+            dataContent: '',
+            schemeConfig: {
+                "AppID": "09dac2bb850749d82a4bdf5fa9f679d1a832473f3e4205379cc803fb398dda4adae0b97c4b291ddf5d8bb7fab4e41cf809b14a6c39733605661fa4ecc26fccac",
+                "AppName": encodeURIComponent("Easy Transfer"),
+                "DID": "ibxNTG1hBPK1rZuoc8fMy4eFQ96UYDAQ4J",
+                "PublicKey": "034c51ddc0844ff11397cc773a5b7d94d5eed05e7006fb229cf965b47f19d27c55",
+                "Description": "",
+                "CoinName": "ELA",
+                "Amount": "",
+                "ReceivingAddress": "",
+                "ReturnUrl": "",
+            },
+            chargeAmount: "",
+            src_chain_id: "",
+            isShow: true,
+        },
+        methods: {
+            number(text) {
+                var numPattern = /^(([1-9]\d*)|\d)(\.\d{1,9})?$/;
+                return numPattern.test(text);
+            },
+            getUrl() {
+                //获取主机地址
+                var localhostPaht = window.location.protocol + "//" + window.location.host;
+                return localhostPaht;
+            },
+            goCharge() {
+                if (this.chargeAmount === "") {
+                    this.toast(this.curLangule['error8']);
+                    return false;
+                }
+
+                if (!this.number(this.chargeAmount)) {
+                    this.toast(this.curLangule['error9'])
+                    return false;
+                }
+
+                if (this.chargeAmount <= 0) {
+                    this.toast(this.curLangule['error9'])
+                    return false;
+                }
+
+                if (this.chargeAmount.toString().indexOf(".") > -1 && this.chargeAmount.toString().split(".")[1].length > 8) {
+                    this.toast(this.curLangule['error9'])
+                    return false;
+                }
+                if (this.src_chain_id === 1) {
+                    this.schemeConfig['CoinName'] = "ELA";
+                } else if (this.src_chain_id === 3) {
+                    this.schemeConfig['CoinName'] = "ELAETHSC";
+                }
+                this.schemeConfig['ReceivingAddress'] = this.chargeAddress;
+                this.schemeConfig['Amount'] = this.chargeAmount;
+                var baseUrl = this.getUrl();
+                if (baseUrl === "file://") {
+                    baseUrl = 'http://dev1.elapps.net';
+                }
+                this.schemeConfig['ReturnUrl'] = baseUrl + '/success.html';
+                var url = "elaphant://elapay?";
+                _.forEach(this.schemeConfig, function(val, key, index) {
+                    if (key === 'ReturnUrl') {
+                        val = encodeURIComponent(val);
+                    }
+                    url += key + '=' + val + '&';
+                });
+
+                var turl = 'https://launch.elaphant.app?appName=Easy Transfer&autoRedirect=True&appTitle=Easy Transfer&redirectURL=' + encodeURIComponent(url);
+                location.href = turl;
+
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            doCopy(publickey) {
+                var v = this;
+                this.$copyText(publickey).then(function(e) {
+                    v.toast(v.curLangule['key8']);
+                }, function(e) {})
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            },
+            query() {
+                let url = this.$getBaseURL() + "/" + this.did + '/tx/' + this.exchangeId;
+                this.getAjax(url).then((res) => {
+                    if (res.state === 0) {
+                        var data = res["data"] || {};
+                        this.state = data["state"] || "renewal_waiting";
+                        if (this.state === "success") {
+                            location.href = "./success.html";
+                        }
+                    }
+                }).catch(() => {
+
+                });
+            },
+            getAjax(url) {
+
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        type: 'GET',
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+
+
+                })
+            },
+            back() {
+                let dataContent = localStorage.getItem('cross.chain.transfer') || "";
+                location.href = "./exchange_start.html?Data=" + dataContent;
+            }
+        },
+        destroyed() {
+            window.removeEventListener('popstate', this.goBack, false);
+        },
+        mounted() {
+            this.getLanugle();
+            document.title = this.curLangule["key1"];
+            if (window.history && window.history.pushState) {
+                // 向历史记录中插入了当前页
+                history.pushState(null, null, document.URL);
+                window.addEventListener('popstate', this.back, false);
+            }
+            this.dataContent = localStorage.getItem('cross.chain.transfer') || "";
+            if (this.dataContent != '') {
+                var data = JSON.parse(decodeURIComponent(this.dataContent));
+                this.did = data["DID"];
+            }
+            var obj = this.GetQueryString("obj") || "";
+            if (obj != "") {
+                obj = JSON.parse(decodeURIComponent(obj));
+            } else {
+                obj = {};
+            }
+
+            this.chargeAddress = obj["src_chain_addr"] || "";
+            this.chargeName = obj["src_chain_name"] || ""
+            this.exchangeId = obj["exchange_id"] || "";
+            this.src_chain_id = obj["src_chain_id"] || "";
+
+            this.timer = setInterval(() => {
+                this.query();
+            }, 5000);
+
+        },
+        beforeDestroy() {
+            clearInterval(this.timer);
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/vue-clipboard.min.js"></script>
+    <script src="./js/global_variable.js"></script>
+    <script>
+        Vue.prototype.$getBaseURL = getBaseURL;
+    </script>
+</head>
+<style type="text/css">
+    body {
+        background: #ffffff;
+    }
+    
+    #app {
+        position: relative;
+        padding: 15px 10px;
+    }
+    
+    .first {
+        position: relative;
+        width: 345px;
+        margin: 0px auto;
+        margin-top: 20px;
+        text-align: center;
+        background: linear-gradient(180deg, #BAD5FE 0%, #EBF7FF 100%);
+        box-shadow: 0px 8px 16px rgba(0, 54, 96, 0.2);
+        border-radius: 5px;
+    }
+    
+    .bgRed {
+        background: linear-gradient(0deg, #FFFAFB 0%, #FFA4BA 118.22%);
+        box-shadow: 0px 8px 16px rgba(99, 124, 116, 0.2);
+    }
+    
+    .bgGreen {
+        background: linear-gradient(180deg, #1BC48C 0%, #EBF7FF 100%);
+        box-shadow: 0px 8px 16px rgba(0, 54, 96, 0.2);
+        border-radius: 5px;
+    }
+    
+    .first .statusRed {
+        color: #FF3365;
+    }
+    
+    .first .statusGreen {
+        color: #1BC48C;
+    }
+    
+    .spinner {
+        display: block;
+        margin: 100px auto 0;
+        width: 150px;
+        text-align: center;
+    }
+    
+    .spinner>div {
+        width: 30px;
+        height: 30px;
+        background-color: #67CF22;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+        animation: bouncedelay 1.4s infinite ease-in-out;
+        /* Prevent first frame from flickering when animation starts */
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+    }
+    
+    .spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+    
+    .spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+    
+    @-webkit-keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            -webkit-transform: scale(0.0)
+        }
+        40% {
+            -webkit-transform: scale(1.0)
+        }
+    }
+    
+    @keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        }
+        40% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+    
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        height: 45px;
+        line-height: 45px;
+        padding: 0 15px;
+        width: 200px;
+    }
+    
+    .hang {
+        height: 25px;
+    }
+    
+    .hang .left {
+        display: inline-block;
+        padding-left: 5px;
+        width: 105px;
+        text-align: left;
+        font-family: PingFang SC;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        color: #000000;
+        overflow: auto;
+    }
+    
+    .hang .right {
+        display: inline-block;
+        width: 227px;
+        text-align: left;
+        font-family: PingFang SC;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 13px;
+        margin-right: 7px;
+        color: #000000;
+        overflow: auto;
+    }
+    
+    .state {
+        position: absolute;
+        width: 157px;
+        height: 24px;
+        line-height: 24px;
+        left: 0px;
+        top: 0px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #888888;
+        background: linear-gradient(90deg, #E1EDFF 42.72%, #EBF7FF 119.94%);
+        box-shadow: 0px 2px 8px #9FBBE2;
+        border-radius: 5px;
+    }
+    
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+    <div class="content" v-cloak>
+        <div class="spinner" v-if="loading">
+
+            <div class="bounce1"></div>
+
+            <div class="bounce2"></div>
+
+            <div class="bounce3"></div>
+        </div>
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+        <div v-if="listData.length===0&&!this.loading" style="text-align: center;margin-top: 50px;font-size: 15px">{{curLangule['key4']}}</div>
+        <div class="first" v-for="(item,index) in listData" @click="click_item(item)" :class="{bgRed:item.state==='renewal_timeout' || item.state==='transfer_failed' || item.state==='direct_transfer_failed' || item.state==='back_failed',bgGreen:item.state==='transfer_finish' || item.state==='direct_transfer_finish' || item.state==='back_finish'}"
+            v-if="listData.length>0&&!this.loading">
+            <div class="state" :class="{statusRed:item.state==='renewal_timeout' || item.state==='transfer_failed' || item.state==='direct_transfer_failed' || item.state==='back_failed','statusGreen': item.state==='transfer_finish' || item.state==='direct_transfer_finish' || item.state==='back_finish'}">
+                {{handleState(item.state)}}
+            </div>
+            <div style="height:30px"></div>
+            <div style="padding-top:10px" v-if="!item.txid"></div>
+            <div class="hang" v-if="item.txid">
+                <span class="left">{{curLangule['key11']}}</span><span class="right" @click.stop="doCopy(item.txid)">{{item.txid}}</span>
+            </div>
+            <div class="hang">
+                <span class="left">{{curLangule['key3']}}</span><span class="right">{{item.src_chain_name}}</span>
+            </div>
+            <div class="hang">
+                <span class="left">{{curLangule['key5']}}</span><span class="right" @click.stop="doCopy(item.src_chain_addr)">{{item.src_chain_addr}}</span>
+            </div>
+            <div style="height:10px"></div>
+            <div class="hang">
+                <span class="left">{{curLangule['key6']}}</span><span class="right">{{item.dst_chain_name}}</span>
+            </div>
+            <div class="hang">
+                <span class="left">{{curLangule['key7']}}</span><span class="right" @click.stop="doCopy(item.dst_chain_addr)">{{item.dst_chain_addr}}</span>
+            </div>
+            <div style="height:10px"></div>
+            <div class="hang" v-if="item.src_value">
+                <span class="left">{{curLangule['key8']}}</span><span class="right">{{item.src_value}}</span>
+            </div>
+
+            <div class="hang" v-if="item.create_time">
+                <span class="left">{{curLangule['key9']}}</span><span class="right">{{dateFormat(new Date(item.create_time),'yyyy-MM-dd HH:mm:ss')}}</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '.content',
+        data: {
+            loading: true,
+            zh: {
+                key1: '兑换记录',
+                key2: '复制成功',
+                key3: '输入链名字',
+                key4: '没有交易记录',
+                key5: "输入链地址",
+                key6: '输出链名字',
+                key7: '输出链地址',
+                key8: '金额',
+                key9: '时间',
+                key10: '状态',
+                key11: '交易id',
+                key12: '等待充值',
+                key13: '转账中',
+                key14: '非快速转账中',
+                key15: '退款中',
+                key16: '转账成功',
+                key17: '非快速转账成功',
+                key18: '退款成功',
+                key19: '等待超时',
+                key20: '转账失败',
+                key21: '非快速转账失败',
+                key22: '退款失败',
+            },
+            en: {
+                key1: 'Exchange records',
+                key2: 'Copy success',
+                key3: 'Enter chain name',
+                key4: 'No exchange Record',
+                key5: "Enter chain address",
+                key6: 'Output chain name',
+                key7: 'Output chain address',
+                key8: 'Amount of money',
+                key9: 'time',
+                key10: 'state',
+                key11: 'Transaction ID',
+                key12: 'renewal_waiting',
+                key13: 'transferring',
+                key14: 'direct_transferring',
+                key15: 'backing',
+                key16: 'transfer_finish',
+                key17: 'direct_transfer_finish',
+                key18: 'back_finish',
+                key19: 'renewal_timeout',
+                key20: 'transfer_failed',
+                key21: 'direct_transfer_failed',
+                key22: 'back_failed',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            listData: [],
+            toastShow: false,
+            toastText: '',
+            isShow: false,
+            timer: ""
+        },
+        methods: {
+            handleState(state) {
+                switch (state) {
+                    case 'renewal_waiting':
+                        return this.curLangule['key12'];
+                        break;
+                    case 'transferring':
+                        return this.curLangule['key13'];
+                        break;
+                    case 'direct_transferring':
+                        return this.curLangule['key14'];
+                        break;
+                    case 'backing':
+                        return this.curLangule['key15'];
+                        break;
+                    case 'transfer_finish':
+                        return this.curLangule['key16'];
+                        break;
+                    case 'direct_transfer_finish':
+                        return this.curLangule['key17'];
+                        break;
+                    case 'back_finish':
+                        return this.curLangule['key18'];
+                        break;
+                    case 'renewal_timeout':
+                        return this.curLangule['key19'];
+                        break;
+                    case 'transfer_failed':
+                        return this.curLangule['key20'];
+                        break;
+                    case 'direct_transfer_failed':
+                        return this.curLangule['key21'];
+                        break;
+                    case 'back_failed':
+                        return this.curLangule['key22'];
+                        break;
+
+                }
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            },
+            doCopy(text) {
+                var v = this;
+                this.$copyText(text).then(function(e) {
+                    v.toast(v.curLangule['key2']);
+                }, function(e) {})
+            },
+            handleTxid(txid) {
+                return txid.substring(0, 16) + '...' + txid.substring(txid.length - 18, txid.length);
+            },
+            click_item(item) {
+                var state = item["state"];
+                if (state === "renewal_timeout" || state === 'renewal_waiting') {
+                    var data = {
+                        "exchange_id": item.exchange_id,
+                        "src_chain_id": item.src_chain_id,
+                        "src_chain_name": item.src_chain_name,
+                        "src_chain_addr": item.src_chain_addr,
+                    }
+                    location.href = "./exchange_end.html?obj=" + encodeURIComponent(JSON.stringify(data));
+                }
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            getHistory(did) {
+                var url = this.$getBaseURL() + '/' + did + '/txs';
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        type: 'GET',
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+
+
+                })
+            },
+            getUrlParam: function(name) {
+                //正则表达式过滤
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                //正则规则
+                var r = window.location.search.substr(1).match(reg);
+
+                if (r != null) return decodeURI(r[2]);
+                return null;
+            },
+            dateFormat(date, sFormat) {
+                let time = {
+                    Year: 0,
+                    TYear: '0',
+                    Month: 0,
+                    TMonth: '0',
+                    Day: 0,
+                    TDay: '0',
+                    Hour: 0,
+                    THour: '0',
+                    hour: 0,
+                    Thour: '0',
+                    Minute: 0,
+                    TMinute: '0',
+                    Second: 0,
+                    TSecond: '0',
+                    Millisecond: 0
+                };
+                time.Year = date.getFullYear();
+                time.TYear = String(time.Year).substr(2);
+                time.Month = date.getMonth() + 1;
+                time.TMonth = time.Month < 10 ? "0" + time.Month : String(time.Month);
+                time.Day = date.getDate();
+                time.TDay = time.Day < 10 ? "0" + time.Day : String(time.Day);
+                time.Hour = date.getHours();
+                time.THour = time.Hour < 10 ? "0" + time.Hour : String(time.Hour);
+                time.hour = time.Hour < 13 ? time.Hour : time.Hour - 12;
+                time.Thour = time.hour < 10 ? "0" + time.hour : String(time.hour);
+                time.Minute = date.getMinutes();
+                time.TMinute = time.Minute < 10 ? "0" + time.Minute : String(time.Minute);
+                time.Second = date.getSeconds();
+                time.TSecond = time.Second < 10 ? "0" + time.Second : String(time.Second);
+                time.Millisecond = date.getMilliseconds();
+
+                return sFormat.replace(/yyyy/ig, String(time.Year))
+                    .replace(/yyy/ig, String(time.Year))
+                    .replace(/yy/ig, time.TYear)
+                    .replace(/y/ig, time.TYear)
+                    .replace(/MM/g, time.TMonth)
+                    .replace(/M/g, String(time.Month))
+                    .replace(/dd/ig, time.TDay)
+                    .replace(/d/ig, String(time.Day))
+                    .replace(/HH/g, time.THour)
+                    .replace(/H/g, String(time.Hour))
+                    .replace(/hh/g, time.Thour)
+                    .replace(/h/g, String(time.hour))
+                    .replace(/mm/g, time.TMinute)
+                    .replace(/m/g, String(time.Minute))
+                    .replace(/ss/ig, time.TSecond)
+                    .replace(/s/ig, String(time.Second))
+                    .replace(/fff/ig, String(time.Millisecond))
+            }
+        },
+        mounted: function() {
+            this.getLanugle();
+            document.title = this.curLangule["key1"];
+        },
+        created: function() {
+            var dataContent = localStorage.getItem('cross.chain.transfer') || "";
+            if (dataContent != "") {
+                var data = JSON.parse(decodeURIComponent(dataContent));
+                var did = data["DID"];
+                this.getHistory(did).then((res) => {
+                    if (res.state === 0) {
+                        this.loading = false;
+                        this.listData = res.data || [];
+                    } else {
+                        this.loading = false;
+                    }
+                }).catch(res => {
+                    this.loading = false;
+                });
+
+                this.timer = setInterval(() => {
+                    this.getHistory(did).then((res) => {
+
+                        if (res.state === 0) {
+                            this.loading = false;
+                            this.listData = res.data || [];
+                        } else {
+                            this.loading = false;
+                        }
+                    }).catch(res => {
+                        this.loading = false;
+                    });
+                }, 1000);
+            }
+        },
+        beforeDestroy() {
+            clearInterval(this.timer);
+        }
+    });
+</script>
+
+</html

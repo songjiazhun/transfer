@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+</head>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+
+    </div>
+</body>
+<script src="./js/vue.min.js"></script>
+<script src="./js/lodash.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                'key1': '转移',
+
+            },
+            en: {
+                'key1': 'Transfer',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            walletList: {},
+            schemeConfig: {
+                "AppID": "09dac2bb850749d82a4bdf5fa9f679d1a832473f3e4205379cc803fb398dda4adae0b97c4b291ddf5d8bb7fab4e41cf809b14a6c39733605661fa4ecc26fccac",
+                "AppName": encodeURIComponent("Easy Transfer"),
+                "DID": "ibxNTG1hBPK1rZuoc8fMy4eFQ96UYDAQ4J",
+                "PublicKey": "034c51ddc0844ff11397cc773a5b7d94d5eed05e7006fb229cf965b47f19d27c55",
+                "RandomNumber": "",
+                "RequestInfo": "elaaddress",
+                "ReturnUrl": "", //跳转到 exchange_start.html            }
+            }
+        },
+        methods: {
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            guid() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0,
+                        v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            },
+            getUrl() {
+                //获取主机地址
+                var localhostPaht = window.location.protocol + "//" + window.location.host;
+                return localhostPaht;
+            },
+            geneElephantPro() {
+                this.schemeConfig['RandomNumber'] = this.guid();
+                var baseUrl = this.getUrl();
+                if (baseUrl === "file://") {
+                    baseUrl = 'http://dev1.elapps.net';
+                }
+                this.schemeConfig['ReturnUrl'] = baseUrl + '/exchange_start.html';
+                var url = "elaphant://identity?";
+                _.forEach(this.schemeConfig, function(val, key, index) {
+                    if (key === 'ReturnUrl') {
+                        val = encodeURIComponent(val);
+                    }
+                    url += key + '=' + val + '&';
+                });
+
+                return url.substring(0, url.length - 1);
+            }
+        },
+        mounted() {
+            this.getLanugle();
+            document.title = this.curLangule["key1"];
+            let eleUrl = this.geneElephantPro();
+            let callUrl = "https://launch.elaphant.app?appName=Easy Transfer&appTitle=Easy Transfer&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
+            location.href = callUrl;
+        }
+    });
+</script>
+
+</html>
