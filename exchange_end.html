@@ -205,15 +205,15 @@
                 <qrcode :value="chargeAddress" :options="{ width: 160 }" style="display:block"></qrcode>
             </div>
 
-            <div class="seven" v-if="chargeName==='ela main chain' || chargeName==='eth side chain'">
-                <input :placeholder="curLangule['key7']" v-model="chargeAmount" />
+            <div class="seven" v-if="src_chain_id===1 || src_chain_id===3">
+                <input :placeholder="handeStr()" v-model="chargeAmount" @input="jisuan()" />
             </div>
-
-            <div v-if="src_chain_id===1 || src_chain_id===2">
+            <p style="text-align:left;width: 300px;margin: 0 auto;margin-top: 15px;" v-if="chargeAmount&&chargeAmount>0">{{curLangule['key9']}}: {{dAmount}}</p>
+            <div v-if="src_chain_id===1 || src_chain_id===3">
                 <span class="six-left" @click="goCharge" v-if="isShow">{{curLangule['key5']}}</span> <span class="six-right" @click="back" v-if="isShow">{{curLangule['key6']}}</span>
             </div>
 
-            <div v-if="src_chain_id===3">
+            <div v-if="src_chain_id===2">
                 <div style="width: 300px;margin: 0 auto;" @click="back">
                     <p class="six">{{curLangule['key6']}}</p>
                 </div>
@@ -238,6 +238,7 @@
                 key8: '复制成功',
                 error8: '请输入ELA金额',
                 error9: '请输入正确的金额',
+                key9: '预计获得'
             },
             en: {
                 key1: 'Transfer',
@@ -250,6 +251,7 @@
                 key8: 'Copy success',
                 error8: 'Please enter the amount of ELA',
                 error9: 'Wrong Amount',
+                key9: 'Estimated acquisition'
             },
             curLangule: {},
             curLanguleKey: 'zh',
@@ -276,8 +278,80 @@
             chargeAmount: "",
             src_chain_id: "",
             isShow: true,
+            srcChainName: '',
+            dstChainName: '',
+            threshold_max: '',
+            threshold_min: '',
+            rate: '',
+            fee: '',
+            dst_chain_id: '',
+            dAmount: '',
+            feeRate: '',
         },
         methods: {
+            accMul(arg1, arg2) {
+                var m = 0,
+                    s1 = arg1.toString(),
+                    s2 = arg2.toString();
+                try {
+                    m += s1.split(".")[1].length
+                } catch (e) {};
+                try {
+                    m += s2.split(".")[1].length
+                } catch (e) {};
+                return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+            },
+            /***
+             * 除法，获取精确乘法的结果值
+             * @param arg1
+             * @param arg2
+             * @returns
+             */
+            accDivCoupon(arg1, arg2) {
+                var t1 = 0,
+                    t2 = 0,
+                    r1, r2;
+                try {
+                    t1 = arg1.toString().split(".")[1].length;
+                } catch (e) {}
+                try {
+                    t2 = arg2.toString().split(".")[1].length;
+                } catch (e) {}
+                with(Math) {
+                    r1 = Number(arg1.toString().replace(".", ""));
+                    r2 = Number(arg2.toString().replace(".", ""));
+                    return (r1 / r2) * pow(10, t2 - t1);
+                }
+            },
+            accSubtr(arg1, arg2) {
+                var r1, r2, m, n;
+                try {
+                    r1 = arg1.toString().split(".")[1].length;
+                } catch (e) {
+                    r1 = 0;
+                }
+                try {
+                    r2 = arg2.toString().split(".")[1].length;
+                } catch (e) {
+                    r2 = 0;
+                }
+                m = Math.pow(10, Math.max(r1, r2));
+                //动态控制精度长度
+                n = (r1 >= r2) ? r1 : r2;
+                return ((arg1 * m - arg2 * m) / m).toFixed(n);
+            },
+            jisuan() {
+                if (this.chargeAmount != '' && parseFloat(this.chargeAmount) > 0) {
+                    let fee = this.accMul(this.chargeAmount, this.feeRate);
+                    if (fee < this.fee) {
+                        fee = this.fee;
+                    }
+                    this.dAmount = this.accSubtr(this.chargeAmount, fee);
+                }
+            },
+            handeStr() {
+                return this.curLangule['key7'] + '(' + this.threshold_min + '-' + this.threshold_max + ')';
+            },
             number(text) {
                 var numPattern = /^(([1-9]\d*)|\d)(\.\d{1,9})?$/;
                 return numPattern.test(text);
@@ -309,7 +383,7 @@
                 }
                 if (this.src_chain_id === 1) {
                     this.schemeConfig['CoinName'] = "ELA";
-                } else if (this.src_chain_id === 2) {
+                } else if (this.src_chain_id === 3) {
                     this.schemeConfig['CoinName'] = "ELAETHSC";
                 }
                 this.schemeConfig['ReceivingAddress'] = this.chargeAddress;
@@ -383,7 +457,6 @@
                 });
             },
             getAjax(url) {
-
                 return new Promise((resovle, reject) => {
                     $.ajax({
                         url: url,
@@ -430,9 +503,24 @@
             }
 
             this.chargeAddress = obj["src_chain_addr"] || "";
-            this.chargeName = obj["src_chain_name"] || ""
+            this.chargeName = obj["src_chain_name"] || "";
             this.exchangeId = obj["exchange_id"] || "";
             this.src_chain_id = obj["src_chain_id"] || "";
+            this.dst_chain_id = obj["dst"] || "";
+            let url = this.$getBaseURL() + '/rateinfo?src=' + this.src_chain_id + "&dst=" + this.dst_chain_id;
+            this.getAjax(url).then((res) => {
+                if (res.state === 0) {
+                    let data = res["data"] || {};
+                    this.feeRate = data["fee_rate"];
+                    this.fee = data["service_min_fee"];
+                    this.srcChainName = data["srcChainName"];
+                    this.dstChainName = data["dstChainName"];
+                    this.threshold_max = data["threshold_max"];
+                    this.threshold_min = data["threshold_min"];
+                }
+            }).catch(() => {
+
+            });
 
             this.timer = setInterval(() => {
                 this.query();

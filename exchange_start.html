@@ -11,7 +11,7 @@
     <script src="./js/wallet-address-validator.min.js"></script>
     <script src="./js/global_variable.js"></script>
     <script>
-        Vue.prototype.$global = WAValidator;
+        Vue.prototype.$wAValidator = WAValidator;
         Vue.prototype.$getBaseURL = getBaseURL;
     </script>
 </head>
@@ -232,7 +232,7 @@
         vertical-align: middle;
         padding: 10px;
         width: 280px;
-        height: 36px;
+        height: 54px;
         background: #FFFFFF;
         opacity: 0.6;
         border-radius: 5px;
@@ -306,6 +306,19 @@
     .hui {
         background: #dddddd;
         color: #333333;
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        width: 300px;
+        height: 48px;
+        line-height: 48px;
+        margin-top: 70px;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
     }
     
     .seven {
@@ -379,28 +392,11 @@
                 <input :placeholder="curLangule['key5']" v-model="back_addr" id="test" @focus="focus()" />
             </div>
 
-            <div class="four" v-if="src_chain_id === 1&dst_chain_id===3">
-                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}}) >>>> 0.97 {{dstChainName}}
-            </div>
-
-            <div class="four" v-if="src_chain_id === 3&dst_chain_id===1">
-                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.97 {{dstChainName}}
-            </div>
-
-            <div class="four" v-if="src_chain_id === 1&dst_chain_id===2">
-                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.9997 {{dstChainName}}
-            </div>
-
-            <div class="four" v-if="src_chain_id === 2&dst_chain_id===1">
-                1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.9699 {{srcChainName}}
-            </div>
-
-
             <div class="seven" @click="histroy">
                 <span><img src="./images/history.png" style="vertical-align: middle;margin-right: 10px;"/>{{curLangule['key9']}}</span>
             </div>
 
-            <div style="width: 300px;margin: 0 auto" @click="nextPage" :class="{hui:!isShow}">
+            <div style="width: 300px;margin: 0 auto" @click="nextPage">
                 <span class="six" :class="{hui:!isShow}">{{curLangule['key6']}}</span>
             </div>
 
@@ -448,10 +444,10 @@
             old_src_chain_id: "",
             dst_chain_id: "",
             old_dst_chain_id: "",
-            //back_addr: "ENx3GpTNqm6h1cQ4phZkXqeXmHs27PLeD8", //退款的地址
-            //dst_addr: "0x17a49F42D49B54142d9eC2b392E31356DD38108C", //收款的地址
-            back_addr: '',
-            dst_addr: '',
+            back_addr: "ENx3GpTNqm6h1cQ4phZkXqeXmHs27PLeD8", //退款的地址
+            dst_addr: "0x17a49F42D49B54142d9eC2b392E31356DD38108C", //收款的地址
+            //back_addr: '',
+            //dst_addr: '',
             did: "",
             elaAddress: "",
             rate: "",
@@ -557,6 +553,7 @@
                     if (res.state === 0) {
                         this.isShow = true;
                         var data = res.data;
+                        data["dst"] = this.dst_chain_id;
                         location.href = "./exchange_end.html?obj=" + encodeURIComponent(JSON.stringify(data));
                     } else {
                         this.toast(res.state + ":" + res.msg);
@@ -598,29 +595,27 @@
                     return false;
                 }
 
-                if ((this.dst_chain_id === 1 || this.dst_chain_id === 3) && !this.isAddressValid(this.dst_addr)) {
+                if ((this.dst_chain_id === 1 || this.dst_chain_id === 2) && !this.isAddressValid(this.dst_addr)) {
                     this.toast(this.curLangule['error1']);
                     return false;
                 }
 
-                if (this.dst_chain_id === 2 && !this.$wAValidator.validate(this.dst_addr, 'ETH')) {
+                if (this.dst_chain_id === 3 && !this.$wAValidator.validate(this.dst_addr, 'ETH')) {
                     this.toast(this.curLangule['error1']);
                     return false;
                 }
-
-
 
                 if (this.back_addr === "") {
                     this.toast(this.curLangule["key5"]);
                     return false;
                 }
 
-                if ((this.src_chain_id === 1 || this.src_chain_id === 3) && !this.isAddressValid(this.back_addr)) {
+                if ((this.src_chain_id === 1 || this.src_chain_id === 2) && !this.isAddressValid(this.back_addr)) {
                     this.toast(this.curLangule['error2']);
                     return false;
                 }
 
-                if (this.src_chain_id === 2 && !this.$wAValidator.validate(this.back_addr, 'ETH')) {
+                if (this.src_chain_id === 3 && !this.$wAValidator.validate(this.back_addr, 'ETH')) {
                     this.toast(this.curLangule['error2']);
                     return false;
                 }

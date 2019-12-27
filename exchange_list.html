@@ -193,7 +193,7 @@
         <div class="toast" v-show="toastShow">
             {{toastText}}
         </div>
-        <div v-if="listData.length===0&&!this.loading" style="text-align: center;margin-top: 50px;font-size: 15px">{{curLangule['key4']}}</div>
+        <div v-if="listData.length===0&&!loading" style="text-align: center;margin-top: 50px;font-size: 15px">{{curLangule['key4']}}</div>
         <div class="first" v-for="(item,index) in listData" @click="click_item(item)" :class="{bgRed:item.state==='renewal_timeout' || item.state==='transfer_failed' || item.state==='direct_transfer_failed' || item.state==='back_failed',bgGreen:item.state==='transfer_finish' || item.state==='direct_transfer_finish' || item.state==='back_finish'}"
             v-if="listData.length>0&&!this.loading">
             <div class="state" :class="{statusRed:item.state==='renewal_timeout' || item.state==='transfer_failed' || item.state==='direct_transfer_failed' || item.state==='back_failed','statusGreen': item.state==='transfer_finish' || item.state==='direct_transfer_finish' || item.state==='back_finish'}">
@@ -256,17 +256,18 @@
                 key20: '转账失败',
                 key21: '非快速转账失败',
                 key22: '退款失败',
+                key23: "没有交易记录"
             },
             en: {
                 key1: 'Exchange records',
-                key2: 'Copy success',
+                key2: 'Copy successful',
                 key3: 'Enter chain name',
                 key4: 'No exchange Record',
                 key5: "Enter chain address",
                 key6: 'Output chain name',
                 key7: 'Output chain address',
                 key8: 'Amount of money',
-                key9: 'time',
+                key9: 'Time',
                 key10: 'state',
                 key11: 'Transaction ID',
                 key12: 'renewal_waiting',
@@ -280,6 +281,7 @@
                 key20: 'transfer_failed',
                 key21: 'direct_transfer_failed',
                 key22: 'back_failed',
+                key23: 'No transactions'
             },
             curLangule: {},
             curLanguleKey: 'zh',
@@ -347,7 +349,7 @@
             },
             click_item(item) {
                 var state = item["state"];
-                if (state === "renewal_timeout" || state === 'renewal_waiting') {
+                if (state === 'renewal_waiting') {
                     var data = {
                         "exchange_id": item.exchange_id,
                         "src_chain_id": item.src_chain_id,
