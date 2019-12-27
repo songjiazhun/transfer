@@ -379,19 +379,19 @@
                 <input :placeholder="curLangule['key5']" v-model="back_addr" id="test" @focus="focus()" />
             </div>
 
-            <div class="four" v-if="src_chain_id === 1&dst_chain_id===2">
+            <div class="four" v-if="src_chain_id === 1&dst_chain_id===3">
                 1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}}) >>>> 0.97 {{dstChainName}}
             </div>
 
-            <div class="four" v-if="src_chain_id === 2&dst_chain_id===1">
+            <div class="four" v-if="src_chain_id === 3&dst_chain_id===1">
                 1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.97 {{dstChainName}}
             </div>
 
-            <div class="four" v-if="src_chain_id === 1&dst_chain_id===3">
+            <div class="four" v-if="src_chain_id === 1&dst_chain_id===2">
                 1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.9997 {{dstChainName}}
             </div>
 
-            <div class="four" v-if="src_chain_id === 3&dst_chain_id===1">
+            <div class="four" v-if="src_chain_id === 2&dst_chain_id===1">
                 1 {{srcChainName}}: {{threshold_min}} - {{threshold_max}} >>>> 0.9699 {{srcChainName}}
             </div>
 
@@ -598,12 +598,12 @@
                     return false;
                 }
 
-                if ((this.dst_chain_id === 1 || this.dst_chain_id === 2) && !this.isAddressValid(this.dst_addr)) {
+                if ((this.dst_chain_id === 1 || this.dst_chain_id === 3) && !this.isAddressValid(this.dst_addr)) {
                     this.toast(this.curLangule['error1']);
                     return false;
                 }
 
-                if (this.dst_chain_id === 3 && !this.$wAValidator.validate(this.dst_addr, 'ETH')) {
+                if (this.dst_chain_id === 2 && !this.$wAValidator.validate(this.dst_addr, 'ETH')) {
                     this.toast(this.curLangule['error1']);
                     return false;
                 }
@@ -615,12 +615,12 @@
                     return false;
                 }
 
-                if ((this.src_chain_id === 1 || this.src_chain_id === 2) && !this.isAddressValid(this.back_addr)) {
+                if ((this.src_chain_id === 1 || this.src_chain_id === 3) && !this.isAddressValid(this.back_addr)) {
                     this.toast(this.curLangule['error2']);
                     return false;
                 }
 
-                if (this.src_chain_id === 3 && !this.$wAValidator.validate(this.back_addr, 'ETH')) {
+                if (this.src_chain_id === 2 && !this.$wAValidator.validate(this.back_addr, 'ETH')) {
                     this.toast(this.curLangule['error2']);
                     return false;
                 }

@@ -209,11 +209,11 @@
                 <input :placeholder="curLangule['key7']" v-model="chargeAmount" />
             </div>
 
-            <div v-if="src_chain_id===1 || src_chain_id===3">
+            <div v-if="src_chain_id===1 || src_chain_id===2">
                 <span class="six-left" @click="goCharge" v-if="isShow">{{curLangule['key5']}}</span> <span class="six-right" @click="back" v-if="isShow">{{curLangule['key6']}}</span>
             </div>
 
-            <div v-if="src_chain_id===2">
+            <div v-if="src_chain_id===3">
                 <div style="width: 300px;margin: 0 auto;" @click="back">
                     <p class="six">{{curLangule['key6']}}</p>
                 </div>
@@ -309,7 +309,7 @@
                 }
                 if (this.src_chain_id === 1) {
                     this.schemeConfig['CoinName'] = "ELA";
-                } else if (this.src_chain_id === 3) {
+                } else if (this.src_chain_id === 2) {
                     this.schemeConfig['CoinName'] = "ELAETHSC";
                 }
                 this.schemeConfig['ReceivingAddress'] = this.chargeAddress;
