@@ -92,11 +92,11 @@
     .six {
         cursor: pointer;
         margin: 0 auto;
-        position: fixed;
+        /* position: fixed; */
         width: 300px;
         height: 48px;
         line-height: 48px;
-        bottom: 90px;
+        /* bottom: 80px; */
         background: #31ACFC;
         box-shadow: 0px 4px 8px #90ADC0;
         border-radius: 200px;
@@ -106,17 +106,18 @@
         font-weight: 600;
         font-size: 16px;
         color: #FFFFFF;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
     
     .six-left {
         display: inline-block;
         cursor: pointer;
         margin: 0 auto;
-        position: fixed;
+        /* position: fixed; */
         width: 165px;
         height: 48px;
         line-height: 48px;
-        bottom: 90px;
+        /* bottom: 80px; */
         left: 10px;
         background: #31ACFC;
         box-shadow: 0px 4px 8px #90ADC0;
@@ -127,17 +128,18 @@
         font-weight: 600;
         font-size: 16px;
         color: #FFFFFF;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
     
     .six-right {
         display: inline-block;
         cursor: pointer;
         margin: 0 auto;
-        position: fixed;
+        /* position: fixed; */
         width: 165px;
         height: 48px;
         line-height: 48px;
-        bottom: 90px;
+        /* bottom: 80px; */
         right: 10px;
         background: #31ACFC;
         box-shadow: 0px 4px 8px #90ADC0;
@@ -148,6 +150,7 @@
         font-weight: 600;
         font-size: 16px;
         color: #FFFFFF;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
     
     .toast {
@@ -169,6 +172,20 @@
         line-height: 45px;
         padding: 0 15px;
         width: 100%;
+    }
+    
+    a,
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    
+    img {
+        border: 0;
+        -webkit-touch-callout: none
     }
     
     [v-cloak] {
@@ -208,7 +225,8 @@
             <div class="seven" v-if="src_chain_id===1 || src_chain_id===3">
                 <input :placeholder="handeStr()" v-model="chargeAmount" @input="jisuan()" />
             </div>
-            <p style="text-align:left;width: 300px;margin: 0 auto;margin-top: 15px;" v-if="chargeAmount&&chargeAmount>0">{{curLangule['key9']}}: {{dAmount}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;line-height:30px;" v-if="chargeAmount&&chargeAmount>0">{{curLangule['key9']}}: {{dAmount}}</p>
+            <div style="height:40px"></div>
             <div v-if="src_chain_id===1 || src_chain_id===3">
                 <span class="six-left" @click="goCharge" v-if="isShow">{{curLangule['key5']}}</span> <span class="six-right" @click="back" v-if="isShow">{{curLangule['key6']}}</span>
             </div>

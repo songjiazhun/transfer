@@ -240,6 +240,7 @@
     }
     
     .five {
+        position: relative;
         width: 300px;
         height: 36px;
         margin: 0 auto;
@@ -253,7 +254,7 @@
         border: 0;
         outline: 0;
         border: 1px solid #999999;
-        padding-left: 10px;
+        padding: 0px 5px;
         border-radius: 5px;
         width: 288px;
         height: 31px;
@@ -346,6 +347,20 @@
         font-size: 14px;
     }
     
+    a,
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    
+    img {
+        border: 0;
+        -webkit-touch-callout: none
+    }
+    
     [v-cloak] {
         display: none;
     }
@@ -385,11 +400,15 @@
                 </div>
                 <div class="address">
                     <input :placeholder="curLangule['key4']" v-model="dst_addr" />
+                    <div @click="clear_dst_addr()" v-if="dst_addr">
+                        <img src="./images/clear.png" />
+                    </div>
                 </div>
             </div>
 
             <div class="five">
-                <input :placeholder="curLangule['key5']" v-model="back_addr" id="test" @focus="focus()" />
+                <input :placeholder="curLangule['key5']" v-model="back_addr" />
+                <div style="position: absolute;right:0px;top:2px" @click="clear_back_addr()" v-if="back_addr"><img src="./images/clear.png" /></div>
             </div>
 
             <div class="seven" @click="histroy">
@@ -461,6 +480,12 @@
 
         },
         methods: {
+            clear_back_addr() {
+                this.back_addr = "";
+            },
+            clear_dst_addr() {
+                this.dst_addr = "";
+            },
             isAddressValid(address) {
                 var r = false;
                 if (address.length != 34) {
