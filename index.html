@@ -40,7 +40,7 @@
                 "DID": "ibxNTG1hBPK1rZuoc8fMy4eFQ96UYDAQ4J",
                 "PublicKey": "034c51ddc0844ff11397cc773a5b7d94d5eed05e7006fb229cf965b47f19d27c55",
                 "RandomNumber": "",
-                "RequestInfo": "elaaddress",
+                "RequestInfo": "ELAAddress,BTCAddress,ETHAddress",
                 "ReturnUrl": "", //跳转到 exchange_start.html            }
             }
         },
@@ -83,19 +83,27 @@
                 this.schemeConfig['ReturnUrl'] = baseUrl + '/exchange_start.html';
                 var url = "elaphant://identity?";
                 _.forEach(this.schemeConfig, function(val, key, index) {
-                    if (key === 'ReturnUrl') {
+                    if (key === 'ReturnUrl' || key === "RequestInfo") {
                         val = encodeURIComponent(val);
                     }
                     url += key + '=' + val + '&';
                 });
 
                 return url.substring(0, url.length - 1);
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
             }
         },
         mounted() {
             this.getLanugle();
             document.title = this.curLangule["key1"];
             let eleUrl = this.geneElephantPro();
+            let isDid = this.GetQueryString("isDid") || "";
+            localStorage.setItem("isDid", isDid);
             let callUrl = "https://launch.elaphant.app?appName=Easy Transfer&appTitle=Easy Transfer&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
             location.href = callUrl;
         }

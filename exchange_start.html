@@ -199,7 +199,7 @@
         position: absolute;
         width: 270px;
         top: 80px;
-        left: 23px;
+        left: 13px;
         border-top: 1px solid #999999;
     }
     
@@ -254,9 +254,9 @@
         border: 0;
         outline: 0;
         border: 1px solid #999999;
-        padding: 0px 5px;
+        padding: 0px 15px;
         border-radius: 5px;
-        width: 288px;
+        width: 267px;
         height: 31px;
     }
     
@@ -408,15 +408,15 @@
 
             <div class="five">
                 <input :placeholder="curLangule['key5']" v-model="back_addr" />
-                <div style="position: absolute;right:0px;top:2px" @click="clear_back_addr()" v-if="back_addr"><img src="./images/clear.png" /></div>
+                <div style="position: absolute;right:5px;top:10px" @click="clear_back_addr()" v-if="back_addr"><img src="./images/clear.png" /></div>
             </div>
 
             <div class="seven" @click="histroy">
                 <span><img src="./images/history.png" style="vertical-align: middle;margin-right: 10px;"/>{{curLangule['key9']}}</span>
             </div>
 
-            <div style="width: 300px;margin: 0 auto" @click="nextPage">
-                <span class="six" :class="{hui:!isShow}">{{curLangule['key6']}}</span>
+            <div style="width: 300px;margin: 0 auto">
+                <span class="six" :class="{hui:!isShow}" @click="nextPage">{{curLangule['key6']}}</span>
             </div>
 
         </div>
@@ -428,7 +428,7 @@
         data: {
             loading: true,
             zh: {
-                key1: '转移',
+                key1: '轻松转',
                 key2: '从',
                 key3: '到',
                 key4: '地址',
@@ -441,14 +441,14 @@
                 error2: '退款地址不合法',
             },
             en: {
-                key1: 'Transfer',
+                key1: 'Easy Transfer',
                 key2: 'From',
                 key3: 'To',
                 key4: 'Address',
                 key5: 'Refund Address',
                 key6: 'Submit',
                 key7: 'Not support',
-                key8: 'Copy success',
+                key8: 'Copy successful',
                 key9: 'History',
                 error1: 'Illegal address',
                 error2: 'Illegal refund address',
@@ -463,8 +463,6 @@
             old_src_chain_id: "",
             dst_chain_id: "",
             old_dst_chain_id: "",
-            //back_addr: "ENx3GpTNqm6h1cQ4phZkXqeXmHs27PLeD8", //退款的地址
-            //dst_addr: "0x17a49F42D49B54142d9eC2b392E31356DD38108C", //收款的地址
             back_addr: '',
             dst_addr: '',
             did: "",
@@ -477,7 +475,7 @@
             dstChainName: "",
             isShow: true,
             isShowButton: true,
-
+            objAddress: {},
         },
         methods: {
             clear_back_addr() {
@@ -551,12 +549,27 @@
                         this.threshold_min = data["threshold_min"];
                         this.old_src_chain_id = this.src_chain_id;
                         this.old_dst_chain_id = this.dst_chain_id;
+                        if (this.dst_chain_id != 2) {
+                            this.dst_addr = this.objAddress[this.dst_chain_id];
+                        } else {
+                            this.dst_addr = "";
+                        }
+
+                        if (this.src_chain_id != 2) {
+                            this.back_addr = this.objAddress[this.src_chain_id];
+                        } else {
+                            this.back_addr = "";
+                        }
+
+
                         //this.back_addr = "";
                         //this.dst_addr = "";
                     } else {
                         this.toast(this.curLangule['key7']);
                         this.src_chain_id = this.old_src_chain_id;
                         this.dst_chain_id = this.old_dst_chain_id;
+                        this.dst_addr = this.objAddress[this.dst_chain_id];
+                        this.back_addr = this.objAddress[this.src_chain_id];
                     }
                 }).catch(() => {
 
@@ -589,12 +602,27 @@
                     this.isShow = true;
                 });
             },
+            getArr(arr) {
+                let data = [];
+                for (let index = 0; index < arr.length; index++) {
+                    if (arr[index]["chain_id"] != 2) {
+                        data.push(arr[index]);
+                    }
+                }
+                return data;
+            },
             getChainList() {
                 let url = this.$getBaseURL() + '/chainlist';
                 this.getAjax(url).then((res) => {
                     if (res.state === 0) {
-                        this.src_chain_list = _.cloneDeep(res["data"]) || [];
-                        this.dst_chain_list = _.cloneDeep(res["data"]).reverse();
+                        let arr = [];
+                        if (this.isDid != "") {
+                            arr = res["data"];
+                        } else {
+                            arr = this.getArr(res["data"]);
+                        }
+                        this.src_chain_list = _.cloneDeep(arr) || [];
+                        this.dst_chain_list = _.cloneDeep(arr).reverse();
                         this.src_chain_id = this.src_chain_list[0]["chain_id"];
                         this.old_src_chain_id = this.src_chain_list[0]["chain_id"];
                         this.dst_chain_id = this.dst_chain_list[0]["chain_id"];
@@ -686,10 +714,13 @@
             this.getLanugle();
             document.title = this.curLangule["key1"];
             let data = this.GetQueryString("Data") || "";
+            this.isDid = localStorage.getItem("isDid");
             if (data != "") {
                 localStorage.setItem('cross.chain.transfer', data);
                 data = JSON.parse(decodeURIComponent(data));
                 this.did = data["DID"];
+                this.objAddress[1] = data['ELAAddress'];
+                this.objAddress[3] = data['ETHAddress'];
                 this.getChainList();
             }
         }

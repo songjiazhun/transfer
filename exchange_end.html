@@ -31,7 +31,7 @@
     }
     
     .first img {
-        width: 100px;
+        width: 80px;
         height: 80px;
     }
     
@@ -246,7 +246,7 @@
         data: {
             loading: true,
             zh: {
-                key1: '转移',
+                key1: '轻松转',
                 key2: "等待存款",
                 key3: '请存款',
                 key4: '到这个地址',
@@ -259,7 +259,7 @@
                 key9: '预计获得'
             },
             en: {
-                key1: 'Transfer',
+                key1: 'Easy Transfer',
                 key2: "Wait to deposit",
                 key3: 'Please deposit',
                 key4: ' to this address',
@@ -360,7 +360,8 @@
             },
             jisuan() {
                 if (this.chargeAmount != '' && parseFloat(this.chargeAmount) > 0) {
-                    let fee = this.accMul(this.chargeAmount, this.feeRate);
+                    let fee = this.accMul(this.chargeAmount, this.rate);
+                    fee = this.accMul(fee, this.feeRate);
                     if (fee < this.fee) {
                         fee = this.fee;
                     }
@@ -529,6 +530,7 @@
             this.getAjax(url).then((res) => {
                 if (res.state === 0) {
                     let data = res["data"] || {};
+                    this.rate = data["rate"];
                     this.feeRate = data["fee_rate"];
                     this.fee = data["service_min_fee"];
                     this.srcChainName = data["srcChainName"];
