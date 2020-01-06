@@ -492,6 +492,9 @@
                         this.loading = false;
                     });
                 }, 1000);
+            } else {
+                this.listData = [];
+                this.loading = false;
             }
         },
         beforeDestroy() {
