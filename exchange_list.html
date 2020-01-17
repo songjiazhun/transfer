@@ -379,7 +379,7 @@
                 }
             },
             getHistory(did) {
-                var url = this.$getBaseURL() + '/' + did + '/txs';
+                var url = this.$getBaseURL() + '/' + did + '/txs?page=0&size=200';
                 return new Promise((resovle, reject) => {
                     $.ajax({
                         url: url,
