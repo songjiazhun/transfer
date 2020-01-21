@@ -230,11 +230,12 @@
             <div class="seven" v-if="src_chain_id===1 || src_chain_id===3">
                 <input :placeholder="handeStr()" v-model="chargeAmount" @input="jisuan()" />
             </div>
-            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;line-height:30px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus!=2">{{curLangule['key9']}}: {{dAmount}}</p>
-            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===3">{{curLangule['key10']}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;line-height:30px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus!=2&&buttonStatus!=4">{{curLangule['key9']}}: {{dAmount}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===3&&src_chain_id===1">{{curLangule['key10']}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===4&&src_chain_id===3">{{curLangule['key12']}}</p>
             <div style="height:40px"></div>
             <div v-if="src_chain_id===1 || src_chain_id===3">
-                <span class="six-left" @click="goCharge" v-if="isShow" :class="{color1:buttonStatus===2}">{{curLangule['key5']}}</span> <span class="six-right" @click="back" v-if="isShow">{{curLangule['key6']}}</span>
+                <span class="six-left" @click="goCharge" v-if="isShow" :class="{color1:buttonStatus===2 || buttonStatus===4}">{{curLangule['key5']}}</span> <span class="six-right" @click="back" v-if="isShow">{{curLangule['key6']}}</span>
             </div>
 
             <div v-if="src_chain_id===2">
@@ -264,7 +265,8 @@
                 error9: '请输入正确的金额',
                 key9: '预计获得',
                 key10: '转账金额超过了快速转账的限额，预计20分钟到账。',
-                key11: '范围：'
+                key11: '范围：',
+                key12: '转账金额需在限定范围内，超出会无法转账。'
             },
             en: {
                 key1: 'Easy Transfer',
@@ -279,7 +281,8 @@
                 error9: 'Wrong Amount',
                 key9: 'Estimated acquisition',
                 key10: 'The transfer amount exceeds the limit of fast transfer and is expected to be received within 20 minutes.',
-                key11: 'Range:'
+                key11: 'Range:',
+                key12: 'The transfer amount must be within the limited range, otherwise the account cannot be received.'
             },
             curLangule: {},
             curLanguleKey: 'zh',
@@ -379,7 +382,7 @@
                     return;
                 }
 
-                if (parseFloat(this.chargeAmount) > 2) {
+                if (this.src_chain_id === 1 && parseFloat(this.chargeAmount) > 2) {
                     this.buttonStatus = 3;
                     let fee = this.accMul(this.chargeAmount, this.rate);
                     fee = this.accMul(fee, this.feeRate);
@@ -389,6 +392,12 @@
                     this.dAmount = this.accSubtr(this.chargeAmount, fee);
                     return;
                 }
+
+                if (this.src_chain_id === 3 && parseFloat(this.chargeAmount) > 2) {
+                    this.buttonStatus = 4;
+                    return;
+                }
+
                 if (parseFloat(this.chargeAmount) >= 0.1) {
                     this.buttonStatus = 1;
                     let fee = this.accMul(this.chargeAmount, this.rate);
@@ -412,7 +421,7 @@
                 return localhostPaht;
             },
             goCharge() {
-                if (this.buttonStatus === 2) {
+                if (this.buttonStatus === 2 || this.buttonStatus === 4) {
                     return false;
                 }
                 if (this.chargeAmount === "") {
