@@ -200,7 +200,10 @@
                 {{handleState(item.state)}}
             </div>
             <div style="height:30px"></div>
-            <div style="padding-top:10px" v-if="!item.txid"></div>
+            <div style="padding-top:10px" v-if="!item.exchange_id"></div>
+            <div class="hang" v-if="item.exchange_id">
+                <span class="left">{{curLangule['key24']}}</span><span class="right" @click.stop="doCopy(item.txid)">{{item.exchange_id}}</span>
+            </div>
             <div class="hang" v-if="item.txid">
                 <span class="left">{{curLangule['key11']}}</span><span class="right" @click.stop="doCopy(item.txid)">{{item.txid}}</span>
             </div>
@@ -244,7 +247,7 @@
                 key8: '金额',
                 key9: '时间',
                 key10: '状态',
-                key11: '交易id',
+                key11: '交易hash',
                 key12: '等待充值',
                 key13: '转账中',
                 key14: '非快速转账中',
@@ -256,7 +259,8 @@
                 key20: '转账失败',
                 key21: '非快速转账失败',
                 key22: '退款失败',
-                key23: "没有交易记录"
+                key23: "没有交易记录",
+                key24: '交易ID'
             },
             en: {
                 key1: 'Exchange records',
@@ -281,7 +285,8 @@
                 key20: 'transfer_failed',
                 key21: 'direct_transfer_failed',
                 key22: 'back_failed',
-                key23: 'No transactions'
+                key23: 'No transactions',
+                key24: 'Exchange ID'
             },
             curLangule: {},
             curLanguleKey: 'zh',

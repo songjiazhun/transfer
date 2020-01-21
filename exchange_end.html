@@ -227,6 +227,10 @@
                 <qrcode :value="chargeAddress" :options="{ width: 160 }" style="display:block"></qrcode>
             </div>
 
+            <div style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="src_chain_id===2">
+                {{curLangule['key13']}} {{threshold_min}} ~ {{threshold_max}} {{curLangule['key14']}}
+            </div>
+
             <div class="seven" v-if="src_chain_id===1 || src_chain_id===3">
                 <input :placeholder="handeStr()" v-model="chargeAmount" @input="jisuan()" />
             </div>
@@ -266,7 +270,9 @@
                 key9: '预计获得',
                 key10: '转账金额超过了快速转账的限额，预计20分钟到账。',
                 key11: '范围：',
-                key12: '转账金额需在限定范围内，超出会无法转账。'
+                key12: '转账金额需在限定范围内，超出会无法转账。',
+                key13: '转账金额需在限定范围（范围：',
+                key14: '）内，超出会无法转账。'
             },
             en: {
                 key1: 'Easy Transfer',
@@ -282,7 +288,9 @@
                 key9: 'Estimated acquisition',
                 key10: 'The transfer amount exceeds the limit of fast transfer and is expected to be received within 20 minutes.',
                 key11: 'Range:',
-                key12: 'The transfer amount must be within the limited range, otherwise the account cannot be received.'
+                key12: 'The transfer amount must be within the limited range,otherwise the account cannot be received.',
+                key13: 'The transfer amount must be within the limited range( range:',
+                key14: '),otherwise the account cannot be received.'
             },
             curLangule: {},
             curLanguleKey: 'zh',
