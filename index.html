@@ -96,6 +96,25 @@
                 var r = window.location.search.substr(1).match(reg);　　　
                 if (r != null) return (r[2]);　　　
                 return null;
+            },
+            isPC() {
+                var userAgentInfo = navigator.userAgent;
+                var Agents = ["Android", "iPhone",
+                    "SymbianOS", "Windows Phone",
+                    "iPad", "iPod"
+                ];
+                var flag = true;
+                for (var v = 0; v < Agents.length; v++) {
+                    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                        flag = false;
+                        break;
+                    }
+                }
+                return flag;
+            },
+            isWechat() {
+                var ua = navigator.userAgent.toLowerCase();
+                return /micromessenger/i.test(ua) || typeof navigator.wxuserAgent !== 'undefined';
             }
         },
         mounted() {
@@ -104,8 +123,12 @@
             let eleUrl = this.geneElephantPro();
             let isDid = this.GetQueryString("isDid") || "";
             localStorage.setItem("isDid", isDid);
-            let callUrl = "https://launch.elaphant.app?appName=Easy Transfer&appTitle=Easy Transfer&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
-            location.href = callUrl;
+            if (this.isPC() || this.isWechat()) {
+                let callUrl = "https://launch.elaphant.app?appName=Easy Transfer&appTitle=Easy Transfer&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
+                location.href = callUrl;
+            } else {
+                location.href = eleUrl;
+            }
         }
     });
 </script>
