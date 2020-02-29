@@ -470,6 +470,7 @@
                     }
                     url += key + '=' + val + '&';
                 });
+                url = url.substring(0, url.length - 1);
                 if (this.isPC() || this.isWechat()) {
                     var turl = 'https://launch.elaphant.app?appName=Easy Transfer&autoRedirect=True&appTitle=Easy Transfer&redirectURL=' + encodeURIComponent(url);
                     location.href = turl;
