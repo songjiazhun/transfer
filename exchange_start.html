@@ -718,9 +718,21 @@
             if (data != "") {
                 localStorage.setItem('cross.chain.transfer', data);
                 data = JSON.parse(decodeURIComponent(data));
-                this.did = data["DID"];
-                this.objAddress[1] = data['ELAAddress'];
-                this.objAddress[3] = data['ETHAddress'];
+                let isElaPhant = data["dst_addr"] || "";
+                if (isElaPhant != "") {
+                    this.did = data["DID"];
+                    this.back_addr = data["back_addr"];
+                    this.src_chain_id = data["src_chain_id"];
+                    this.dst_addr = data["dst_addr"];
+                    this.dst_chain_id = data["dst_chain_id"];
+                    this.objAddress[this.src_chain_id] = this.back_addr;
+                    this.objAddress[this.dst_chain_id] = this.dst_addr;
+                } else {
+                    this.did = data["DID"];
+                    this.objAddress[1] = data['ELAAddress'];
+                    this.objAddress[3] = data['ETHAddress'];
+                }
+
                 this.getChainList();
             }
         }
