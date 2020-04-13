@@ -730,7 +730,13 @@
                 } else {
                     this.did = data["DID"];
                     this.objAddress[1] = data['ELAAddress'];
-                    this.objAddress[3] = data['ETHAddress'];
+                    let dstaddress = this.GetQueryString("dstaddress") || "";
+                    if (dstaddress === '') {
+                        this.objAddress[3] = data['ETHAddress'];
+                    } else {
+                        this.objAddress[3] = dstaddress;
+                    }
+
                 }
 
                 this.getChainList();
