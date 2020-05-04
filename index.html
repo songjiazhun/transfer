@@ -128,7 +128,7 @@
             this.dstaddress = this.GetQueryString("dstaddress") || "";
             document.title = this.curLangule["key1"];
             let eleUrl = this.geneElephantPro();
-            let isDid = this.GetQueryString("isDid") || "";
+            let isDid = this.GetQueryString("isDid") || "xxxxxx";
             localStorage.setItem("isDid", isDid);
             if (this.isPC() || this.isWechat()) {
                 let callUrl = "https://launch.elaphant.app?appName=Easy Transfer&appTitle=Easy Transfer&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
