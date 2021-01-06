@@ -232,10 +232,11 @@
             </div>
 
             <div class="seven">
-                <input :placeholder="handeStr()" v-model="chargeAmount"/>
+                <input :placeholder="handeStr()" v-model="chargeAmount" @input="jisuan()"/>
             </div>
-            <!-- <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;line-height:30px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus!=2&&buttonStatus!=4">{{curLangule['key9']}}: {{dAmount}}</p>
-            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===3&&src_chain_id===1">{{curLangule['key10']}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;margin-top: 5px;">{{curLangule['key15']}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;line-height:10px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus!=2&&buttonStatus!=4">{{curLangule['key9']}}: {{dAmount}}</p>
+            <!-- <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===3&&src_chain_id===1">{{curLangule['key10']}}</p>
             <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===4&&src_chain_id===3">{{curLangule['key12']}}</p> -->
             <div style="height:40px"></div>
             <div>
@@ -265,7 +266,8 @@
                 key11: '范围：',
                 key12: '转账金额需在限定范围内，超出会无法转账。',
                 key13: '转账金额需在限定范围（范围：',
-                key14: '）内，超出会无法转账。'
+                key14: '）内，超出会无法转账。',
+                key15:'收费 0.6%'
             },
             en: {
                 key1: 'Easy Transfer',
@@ -283,7 +285,8 @@
                 key11: 'Range:',
                 key12: 'The transfer amount must be within the limited range,otherwise the account cannot be received.',
                 key13: 'The transfer amount must be within the limited range( range:',
-                key14: '),otherwise the account cannot be received.'
+                key14: '),otherwise the account cannot be received.',
+                key15:'fees 0.6%'
             },
             curLangule: {},
             curLanguleKey: 'zh',
@@ -385,29 +388,9 @@
                     return;
                 }
 
-                if (this.src_chain_id === 1 && parseFloat(this.chargeAmount) > 2) {
-                    this.buttonStatus = 3;
-                    let fee = this.accMul(this.chargeAmount, this.rate);
-                    fee = this.accMul(fee, this.feeRate);
-                    if (fee < this.fee) {
-                        fee = this.fee;
-                    }
-                    this.dAmount = this.accSubtr(this.chargeAmount, fee);
-                    return;
-                }
-
-                if (this.src_chain_id === 3 && parseFloat(this.chargeAmount) > 2) {
-                    this.buttonStatus = 4;
-                    return;
-                }
-
                 if (parseFloat(this.chargeAmount) >= 0.1) {
                     this.buttonStatus = 1;
-                    let fee = this.accMul(this.chargeAmount, this.rate);
-                    fee = this.accMul(fee, this.feeRate);
-                    if (fee < this.fee) {
-                        fee = this.fee;
-                    }
+                    let fee = this.accMul(this.chargeAmount,0.006);
                     this.dAmount = this.accSubtr(this.chargeAmount, fee);
                 }
             },
