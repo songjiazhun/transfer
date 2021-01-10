@@ -384,7 +384,7 @@
                   </select>
                 </div>
             </div>
-            <div class="second">
+            <div class="second" @click="exchange()">
                 <img src="./images/duihuan.png" />
             </div>
             <div class="three">
@@ -503,11 +503,21 @@
                 location.href = "./exchange_list.html";
             },
             nextPage() {
+
                 if (this.checkParms() && this.isShow) {
                     //this.generator();
                    //let data["dst"] = this.dst_chain_id;
                    //location.href = "./exchange_end.html?obj=" + encodeURIComponent(JSON.stringify(data));
-                   location.href = "./exchange_end.html?esc="+this.dst_addr;
+                   if(this.dstChainName==="ELA/ETHSC(ETH side chain)"){
+                      location.href = "./exchange_end.html?esc="+this.dst_addr;
+                      return;
+                   }
+
+                   if(this.dstChainName==="ELA(main chain)"){
+                      location.href = "./withdrawal.html?elaAddress="+this.dst_addr;
+                      return;
+                   }
+
                 }
             },
             exchange() {

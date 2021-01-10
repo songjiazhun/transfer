@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/vue-clipboard.min.js"></script>
+    <script src="./js/vue-qrcode.min.js"></script>
+    <script src="./js/web3.min.js"></script>
+    <script src="./js/global_variable.js"></script>
+    <script>
+        Vue.prototype.$getBaseURL = getBaseURL;
+        Vue.component(VueQrcode.name, VueQrcode);
+    </script>
+</head>
+<style type="text/css">
+    body {
+        background: #ffffff;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .first {
+        width: 300px;
+        margin: 0 auto;
+    }
+
+    .first img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .second {
+        width: 300px;
+        margin: 0 auto;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+        color: #000000;
+    }
+
+    .three {
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 5px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        text-align: center;
+        color: #000000;
+    }
+
+    .four {
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 5px;
+    }
+
+    .four img {
+        margin-top: -7px;
+        vertical-align: middle;
+    }
+
+    .five {
+        width: 160px;
+        margin: 0 auto;
+    }
+
+    .seven {
+        width: 300px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border-radius: 5px;
+    }
+
+    .seven input {
+        border: 0;
+        outline: 0;
+        padding-left: 10px;
+        border-radius: 5px;
+        width: 290px;
+        height: 31px;
+        border: 1px solid #999999;
+    }
+
+    .six {
+        cursor: pointer;
+        margin: 0 auto;
+        /* position: fixed; */
+        width: 300px;
+        height: 48px;
+        line-height: 48px;
+        /* bottom: 80px; */
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    .six-left {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        /* position: fixed; */
+        width: 165px;
+        height: 48px;
+        line-height: 48px;
+        /* bottom: 80px; */
+        left: 10px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    .color1 {
+        background: #bcbcbc;
+        box-shadow: 0px 4px 8px #bcbcbc;
+    }
+
+    .six-right {
+        display: inline-block;
+        cursor: pointer;
+        margin: 0 auto;
+        /* position: fixed; */
+        width: 165px;
+        height: 48px;
+        line-height: 48px;
+        /* bottom: 80px; */
+        right: 10px;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        text-align: center;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        color: #FFFFFF;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        height: 45px;
+        line-height: 45px;
+        padding: 0 15px;
+        width: 100%;
+    }
+
+    a,
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    img {
+        border: 0;
+        -webkit-touch-callout: none
+    }
+
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+
+        <div class="text-center">
+            <div class="first">
+                <img src="./images/deposit.png" />
+            </div>
+            <div class="three">
+                {{curLangule['key3']}}{{curLangule['key4']}}
+            </div>
+
+            <div class="four" @click="doCopy(elaAddress)" style="background: #E6F1FF;padding: 10px 0px;border-radius: 5px;">
+                <span style="display: inline-block;width:255px;font-size: 14px;
+                color: #31ACFC;overflow: auto;">{{elaAddress}}</span>
+                <span style="display: inline-block;width:40px;"><img src="./images/ccopy.png" /> </span>
+            </div>
+
+            <!-- <div class="five">
+                <qrcode :value="chargeAddress" :options="{ width: 160 }" style="display:block"></qrcode>
+            </div> -->
+
+            <!-- <div style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="src_chain_id===2">
+                {{curLangule['key13']}} {{threshold_min}} ~ {{threshold_max}} {{curLangule['key14']}}
+            </div> -->
+
+            <div class="seven">
+                <!-- <input :placeholder="handeStr()" v-model="chargeAmount" @input="jisuan()"/> -->
+                <input :placeholder="handeStr()" v-model="withdrawalAmount"/>
+            </div>
+           <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;margin-top: 5px;">{{errText}}</p>
+             <!-- <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;line-height:10px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus!=2&&buttonStatus!=4">{{curLangule['key9']}}: {{dAmount}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===3&&src_chain_id===1">{{curLangule['key10']}}</p>
+            <p style="text-align:left;width: 300px;margin: 0 auto;height:30px;color: #ff0000;font-size: 13px;" v-if="chargeAmount&&chargeAmount>0&&buttonStatus===4&&src_chain_id===3">{{curLangule['key12']}}</p> -->
+            <div style="height:30px"></div>
+            <div>
+                <span class="six-left" @click="clickWithdrawal()">{{curLangule['key5']}}</span> <span class="six-right" @click="back">{{curLangule['key6']}}</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                key1: '轻松转',
+                key3: '提现',
+                key4: '到这个地址',
+                key5: '提现',
+                key6: '返回主页',
+                key7: '输入提现金额',
+                key8: '复制成功',
+                key9:"提现成功",
+                key10:"提现失败",
+                error8: '请输入金额',
+                error9: '请输入正确的金额',
+            },
+            en: {
+                key1: 'Easy Transfer',
+                key3: 'Withdraw',
+                key4: ' to this address',
+                key5: 'Withdraw',
+                key6: 'Back Page',
+                key7: 'Input Withdraw amount',
+                key8: 'Copy successful',
+                key9: 'Withdraw successful',
+                key10:"Withdraw Fail",
+                error8: 'Please enter the amount',
+                error9: 'Wrong Amount',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            toastShow: false,
+            toastText: '',
+            chargeAddress: "EKNBPu9vACntUetBxJ2jhB22VnFo2CtZZ1",
+            chargeName: "",
+            did: "",
+            timer: "",
+            state: "renewal_waiting",
+            exchangeId: "",
+            dataContent: '',
+            schemeConfig: {
+                "AppID": "09dac2bb850749d82a4bdf5fa9f679d1a832473f3e4205379cc803fb398dda4adae0b97c4b291ddf5d8bb7fab4e41cf809b14a6c39733605661fa4ecc26fccac",
+                "AppName": encodeURIComponent("Easy Transfer"),
+                "DID": "ibxNTG1hBPK1rZuoc8fMy4eFQ96UYDAQ4J",
+                "PublicKey": "034c51ddc0844ff11397cc773a5b7d94d5eed05e7006fb229cf965b47f19d27c55",
+                "Description": "",
+                "CoinName": "ELA",
+                "Amount": "",
+                "OrderID":"",
+                "ReceivingAddress": "",
+                "ReturnUrl": "",
+            },
+            elaAddress:'',
+            withdrawalAmount:"",
+            selectedAddress:"",
+            errText:""
+        },
+        methods: {
+            accMul(arg1, arg2) {
+                var m = 0,
+                    s1 = arg1.toString(),
+                    s2 = arg2.toString();
+                try {
+                    m += s1.split(".")[1].length
+                } catch (e) {};
+                try {
+                    m += s2.split(".")[1].length
+                } catch (e) {};
+                return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+            },
+            /***
+             * 除法，获取精确乘法的结果值
+             * @param arg1
+             * @param arg2
+             * @returns
+             */
+            accDivCoupon(arg1, arg2) {
+                var t1 = 0,
+                    t2 = 0,
+                    r1, r2;
+                try {
+                    t1 = arg1.toString().split(".")[1].length;
+                } catch (e) {}
+                try {
+                    t2 = arg2.toString().split(".")[1].length;
+                } catch (e) {}
+                with(Math) {
+                    r1 = Number(arg1.toString().replace(".", ""));
+                    r2 = Number(arg2.toString().replace(".", ""));
+                    return (r1 / r2) * pow(10, t2 - t1);
+                }
+            },
+            accSubtr(arg1, arg2) {
+                var r1, r2, m, n;
+                try {
+                    r1 = arg1.toString().split(".")[1].length;
+                } catch (e) {
+                    r1 = 0;
+                }
+                try {
+                    r2 = arg2.toString().split(".")[1].length;
+                } catch (e) {
+                    r2 = 0;
+                }
+                m = Math.pow(10, Math.max(r1, r2));
+                //动态控制精度长度
+                n = (r1 >= r2) ? r1 : r2;
+                return ((arg1 * m - arg2 * m) / m).toFixed(n);
+            },
+            jisuan() {
+                if (this.chargeAmount === '') {
+                    this.buttonStatus = 1;
+                    return;
+                }
+                if (parseFloat(this.chargeAmount) < 0.1) {
+                    this.buttonStatus = 2;
+                    return;
+                }
+
+                if (parseFloat(this.chargeAmount) >= 0.1) {
+                    this.buttonStatus = 1;
+                    let fee = this.accMul(this.chargeAmount,0.006);
+                    this.dAmount = this.accSubtr(this.chargeAmount, fee);
+                }
+            },
+            handeStr() {
+                return this.curLangule['key7'];
+            },
+            number(text) {
+                var numPattern = /^(([1-9]\d*)|\d)(\.\d{1,9})?$/;
+                return numPattern.test(text);
+            },
+            getUrl() {
+                //获取主机地址
+                var localhostPaht = window.location.protocol + "//" + window.location.host;
+                return localhostPaht;
+            },
+            isPC() {
+                var userAgentInfo = navigator.userAgent;
+                var Agents = ["Android", "iPhone",
+                    "SymbianOS", "Windows Phone",
+                    "iPad", "iPod"
+                ];
+                var flag = true;
+                for (var v = 0; v < Agents.length; v++) {
+                    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                        flag = false;
+                        break;
+                    }
+                }
+                return flag;
+            },
+            isWechat() {
+                var ua = navigator.userAgent.toLowerCase();
+                return /micromessenger/i.test(ua) || typeof navigator.wxuserAgent !== 'undefined';
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            doCopy(publickey) {
+                var v = this;
+                this.$copyText(publickey).then(function(e) {
+                    v.toast(v.curLangule['key8']);
+                }, function(e) {})
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            },
+            query() {
+                let url = this.$getBaseURL() + "/" + this.did + '/tx/' + this.exchangeId;
+                this.getAjax(url).then((res) => {
+                    if (res.state === 0) {
+                        var data = res["data"] || {};
+                        this.state = data["state"] || "renewal_waiting";
+                        if (this.state === "success") {
+                            location.href = "./success.html";
+                        }
+                    }
+                }).catch(() => {
+
+                });
+            },
+            getAjax(url) {
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        type: 'GET',
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+
+
+                })
+            },
+            back() {
+                let dataContent = localStorage.getItem('cross.chain.transfer') || "";
+                location.href = "./exchange_start.html?Data=" + dataContent;
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            clickWithdrawal(){
+                if(this.selectedAddress ===""){
+                    this.toast(this.errText);
+                     return false;
+                }
+                if(this.withdrawalAmount ===""){
+                    this.toast(this.curLangule["error8"]);
+                     return false;
+                }
+
+                if (!this.number(this.withdrawalAmount)) {
+                    this.toast(this.curLangule['error9'])
+                    return false;
+                }
+
+                if (this.withdrawalAmount <= 0) {
+                    this.toast(this.curLangule['error9'])
+                    return false;
+                }
+
+                if (window.web3) {
+                    var contract = new web3.eth.Contract([{"constant":false,"inputs":[{"name":"_addr","type":"string"},{"name":"_amount","type":"uint256"},{"name":"_fee","type":"uint256"}],"name":"receivePayload","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_addr","type":"string"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":false,"name":"_crosschainamount","type":"uint256"},{"indexed":true,"name":"_sender","type":"address"}],"name":"PayloadReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_sender","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":true,"name":"_black","type":"address"}],"name":"EtherDeposited","type":"event"}]);
+                    contract.options.address = "0xC445f9487bF570fF508eA9Ac320b59730e81e503";
+                    var cdata  = contract.methods.receivePayload(this.elaAddress, web3.utils.toWei(this.withdrawalAmount+"", "ether"), "100000000000000").encodeABI();
+                    var tx = {data: cdata, to: contract.options.address, from: this.selectAddress};
+                    tx.value = web3.utils.toWei(this.withdrawalAmount+"", "ether");
+
+                    web3.eth.sendTransaction(tx)
+                        .then(() => {
+                        this.toast(this.curLangule['key9']);
+                        }, (err) => {
+                            this.toast(this.curLangule['key10']);
+                        });
+                }
+            },
+            initWallet() {
+    return new Promise((resolve, reject) => {
+        if (typeof window.ethereum === 'undefined') {
+            window.web3 = new Web3(new Web3.providers.HttpProvider("https://escrpc.elaphant.app"));
+            reject('Looks like you need a Dapp browser to get started.Consider installing MetaMask!');
+        } else {
+            //resolve(1);
+            ethereum.enable().then(() => {
+                window.web3 = new Web3(ethereum);
+                let selectedAddress = ethereum.selectedAddress;
+                resolve(selectedAddress);
+
+
+            }).catch((reason) => {
+                reject(reason);
+            });
+            ethereum.on('accountsChanged', function (accounts) {
+                //window.location.href = window.location.href;
+            });
+            ethereum.on('networkChanged', function (accounts) {
+                //window.location.href = window.location.href;
+            });
+        }
+    });
+      }
+
+
+        },
+        destroyed() {
+            window.removeEventListener('popstate', this.goBack, false);
+        },
+        mounted() {
+            this.getLanugle();
+            this.elaAddress = this.GetQueryString("elaAddress");
+            document.title = this.curLangule["key1"];
+            if (window.history && window.history.pushState) {
+                // 向历史记录中插入了当前页
+                history.pushState(null, null, document.URL);
+                window.addEventListener('popstate', this.back, false);
+            }
+            this.dataContent = localStorage.getItem('cross.chain.transfer') || "";
+            if (this.dataContent != '') {
+                var data = JSON.parse(decodeURIComponent(this.dataContent));
+                this.did = data["DID"];
+            }
+            var obj = this.GetQueryString("obj") || "";
+            if (obj != "") {
+                obj = JSON.parse(decodeURIComponent(obj));
+            } else {
+                obj = {};
+            }
+
+            this.initWallet().then((selectAddress)=>{
+                this.selectAddress = selectAddress;
+            }).catch((err)=>{
+                 this.errText = err;
+                 this.toast(err);
+            });
+        },
+        beforeDestroy() {
+            clearInterval(this.timer);
+        }
+    });
+</script>
+
+</html>
