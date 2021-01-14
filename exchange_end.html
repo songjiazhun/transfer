@@ -267,7 +267,7 @@
                 key12: '转账金额需在限定范围内，超出会无法转账。',
                 key13: '转账金额需在限定范围（范围：',
                 key14: '）内，超出会无法转账。',
-                key15:'收费 0.3%'
+                key15:'收费: 1 ELA'
             },
             en: {
                 key1: 'Easy Transfer',
@@ -286,7 +286,7 @@
                 key12: 'The transfer amount must be within the limited range,otherwise the account cannot be received.',
                 key13: 'The transfer amount must be within the limited range( range:',
                 key14: '),otherwise the account cannot be received.',
-                key15:'fees 0.3%'
+                key15:'fees: 1 ELA'
             },
             curLangule: {},
             curLanguleKey: 'zh',
@@ -383,14 +383,15 @@
                     this.buttonStatus = 1;
                     return;
                 }
-                if (parseFloat(this.chargeAmount) < 0.1) {
+                if (parseFloat(this.chargeAmount) <= 1) {
                     this.buttonStatus = 2;
                     return;
                 }
 
-                if (parseFloat(this.chargeAmount) >= 0.1) {
+                if (parseFloat(this.chargeAmount) > 1) {
                     this.buttonStatus = 1;
-                    let fee = this.accMul(this.chargeAmount,0.003);
+                    //let fee = this.accMul(this.chargeAmount,1);
+                      let fee = 1;
                     this.dAmount = this.accSubtr(this.chargeAmount, fee);
                 }
             },
