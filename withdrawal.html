@@ -480,25 +480,26 @@
                 if (r != null) return (r[2]);　　　
                 return null;
             },
-            clickWithdrawal(){
-                if(this.selectedAddress ===""){
-                    this.toast(this.errText);
+           async clickWithdrawal(){
+               try{
+                   this.selectedAddress = await this.initWallet() || "";
+               if(this.selectedAddress ===""){
+                     this.toast("NO select Address");
                      return false;
                 }
                 if(this.withdrawalAmount ===""){
                     this.toast(this.curLangule["error8"]);
                      return false;
                 }
-
                 if (!this.number(this.withdrawalAmount)) {
                     this.toast(this.curLangule['error9'])
                     return false;
                 }
-
                 if (this.withdrawalAmount <= 0) {
                     this.toast(this.curLangule['error9'])
                     return false;
                 }
+
 
                 if (window.web3) {
                     var contract = new web3.eth.Contract([{"constant":false,"inputs":[{"name":"_addr","type":"string"},{"name":"_amount","type":"uint256"},{"name":"_fee","type":"uint256"}],"name":"receivePayload","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_addr","type":"string"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":false,"name":"_crosschainamount","type":"uint256"},{"indexed":true,"name":"_sender","type":"address"}],"name":"PayloadReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_sender","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":true,"name":"_black","type":"address"}],"name":"EtherDeposited","type":"event"}]);
@@ -514,6 +515,10 @@
                             this.toast(this.curLangule['key10']);
                         });
                 }
+
+               }catch(err){
+
+            }
             },
             initWallet() {
     return new Promise((resolve, reject) => {
@@ -529,7 +534,7 @@
 
 
             }).catch((reason) => {
-                reject(reason);
+                reject("");
             });
             ethereum.on('accountsChanged', function (accounts) {
                 //window.location.href = window.location.href;
@@ -570,8 +575,7 @@
             this.initWallet().then((selectAddress)=>{
                 this.selectAddress = selectAddress;
             }).catch((err)=>{
-                 this.errText = err;
-                 this.toast(err);
+                 this.toast("User rejected the request");
             });
         },
         beforeDestroy() {
